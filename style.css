@@ -1,0 +1,150 @@
+/* ===== RESET BÁSICO ===== */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+/* ===== CORPO DA PÁGINA (modo escuro) ===== */
+body {
+  font-family: Arial, Helvetica, sans-serif;
+  background-color: #0f1a14; /* verde bem escuro */
+  color: #e6ffe6; /* branco esverdeado */
+  padding: 20px;
+  line-height: 1.5;
+}
+
+/* ===== CABEÇALHO ===== */
+.cabecalho {
+  text-align: center;
+  margin-bottom: 30px;
+  padding: 20px;
+  border-bottom: 2px solid #2ecc71; /* verde neon suave */
+}
+
+.cabecalho h1 {
+  color: #39ff14; /* verde neon */
+  font-size: 2rem;
+  margin-bottom: 6px;
+  letter-spacing: 1px;
+}
+
+.subtitulo {
+  color: #8fd19e; /* verde claro apagado */
+  font-size: 1rem;
+}
+
+/* ===== CARDS DE RESUMO ===== */
+.cards-resumo {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 16px;
+  margin-bottom: 30px;
+}
+
+.card {
+  background-color: #1a2e22; /* verde escuro, mais claro que o fundo */
+  border-radius: 16px; /* cantos bem arredondados */
+  padding: 18px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.4);
+  transition: transform 0.2s ease;
+}
+
+.card:hover {
+  transform: translateY(-3px);
+}
+
+.card-titulo {
+  font-size: 0.85rem;
+  color: #8fd19e;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.card-valor {
+  font-size: 1.6rem;
+  font-weight: bold;
+  color: #39ff14; /* verde neon */
+}
+
+.card-legenda {
+  font-size: 0.8rem;
+  color: #8fd19e;
+}
+
+/* ===== ÁREA DA TABELA ===== */
+.area-tabela h2 {
+  color: #39ff14;
+  margin-bottom: 12px;
+  font-size: 1.3rem;
+}
+
+/* Container que permite rolagem horizontal no celular */
+.tabela-responsiva {
+  overflow-x: auto;
+  border-radius: 12px;
+  background-color: #1a2e22;
+  padding: 8px;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  min-width: 600px; /* força rolagem em telas pequenas */
+}
+
+thead th {
+  background-color: #14351f;
+  color: #39ff14;
+  padding: 12px 10px;
+  text-align: left;
+  font-size: 0.85rem;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  border-bottom: 2px solid #2ecc71;
+}
+
+tbody td {
+  padding: 12px 10px;
+  border-bottom: 1px solid #244a30;
+  font-size: 0.9rem;
+  color: #e6ffe6;
+}
+
+tbody tr:hover {
+  background-color: #203a28;
+}
+
+/* Destaques de situação */
+.situacao-bom {
+  color: #39ff14;
+  font-weight: bold;
+}
+
+.situacao-atencao {
+  color: #ffb347; /* laranja para chamar atenção */
+  font-weight: bold;
+}
+
+.situacao-sem-nota {
+  color: #8fd19e;
+  font-style: italic;
+}
+
+/* ===== RESPONSIVIDADE (celular) ===== */
+@media (max-width: 600px) {
+  body {
+    padding: 12px;
+  }
+
+  .cabecalho h1 {
+    font-size: 1.5rem;
+  }
+
+  .card-valor {
+    font-size: 1.3rem;
+  }
+}
