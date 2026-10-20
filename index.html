@@ -15,57 +15,96 @@ meu boletim
     <p class="subtitulo">9º Ano — Estudante Exemplo</p>
   </header>
 
-  <!-- CARDS DE RESUMO -->
-  <section class="cards-resumo">
-    <div class="card">
-      <span class="card-titulo">Média Geral</span>
-      <span class="card-valor" id="media-geral">—</span>
-    </div>
+  <!-- ÁREA DE LOGIN / PIN -->
+  <section id="area-login" class="area-login">
+    <div class="card-login">
+      <h2>Acesso ao Boletim</h2>
+      <p class="info-aluno-login">Turma: <strong>9C</strong> | Chamada: <strong>10</strong></p>
+      
+      <div class="grupo-input">
+        <label for="input-pin">Digite seu PIN:</label>
+        <input type="password" id="input-pin" maxlength="10" placeholder="PIN" />
+      </div>
 
-    <div class="card">
-      <span class="card-titulo">Total de Faltas</span>
-      <span class="card-valor" id="total-faltas">—</span>
-    </div>
-
-    <div class="card">
-      <span class="card-titulo">Bom Desempenho</span>
-      <span class="card-valor" id="qtd-bom">—</span>
-    </div>
-
-    <div class="card">
-      <span class="card-titulo">Precisam de Atenção</span>
-      <span class="card-valor" id="qtd-atencao">—</span>
-    </div>
-
-    <div class="card">
-      <span class="card-titulo">Frequência</span>
-      <span class="card-valor" id="frequencia">—</span>
-      <span class="card-legenda" id="frequencia-legenda">—</span>
+      <button type="button" id="btn-entrar" class="btn-primario">Entrar</button>
+      <p id="msg-login" class="msg-status"></p>
     </div>
   </section>
 
-  <!-- TABELA DE DISCIPLINAS -->
-  <section class="area-tabela">
-    <h2>Notas por Disciplina</h2>
-    <div class="tabela-responsiva">
-      <table>
-        <thead>
-          <tr>
-            <th>Disciplina</th>
-            <th>1º Tri</th>
-            <th>2º Tri</th>
-            <th>3º Tri</th>
-            <th>Média</th>
-            <th>Faltas</th>
-            <th>Situação</th>
-          </tr>
-        </thead>
-        <tbody id="corpo-tabela">
-          <!-- As linhas serão inseridas pelo JavaScript -->
-        </tbody>
-      </table>
+  <!-- CONTEÚDO DO BOLETIM (OCULTO ANTES DO LOGIN) -->
+  <main id="conteudo-boletim" class="escondido">
+    
+    <!-- BARRA DE AÇÕES -->
+    <div class="barra-acoes">
+      <button type="button" id="btn-alterar" class="btn-secundario">Alterar dados</button>
     </div>
-  </section>
+
+    <!-- CARDS DE RESUMO -->
+    <section class="cards-resumo">
+      <div class="card">
+        <span class="card-titulo">Média Geral</span>
+        <span class="card-valor" id="media-geral">—</span>
+      </div>
+
+      <div class="card">
+        <span class="card-titulo">Total de Faltas</span>
+        <span class="card-valor" id="total-faltas">—</span>
+      </div>
+
+      <div class="card">
+        <span class="card-titulo">Bom Desempenho</span>
+        <span class="card-valor" id="qtd-bom">—</span>
+      </div>
+
+      <div class="card">
+        <span class="card-titulo">Precisam de Atenção</span>
+        <span class="card-valor" id="qtd-atencao">—</span>
+      </div>
+
+      <div class="card">
+        <span class="card-titulo">Frequência</span>
+        <span class="card-valor" id="frequencia">—</span>
+        <span class="card-legenda" id="frequencia-legenda">—</span>
+      </div>
+    </section>
+
+    <!-- TABELA DE DISCIPLINAS -->
+    <section class="area-tabela">
+      <h2>Notas por Disciplina</h2>
+      <div class="tabela-responsiva">
+        <table>
+          <thead>
+            <tr>
+              <th>Disciplina</th>
+              <th>1º Tri</th>
+              <th>2º Tri</th>
+              <th>3º Tri</th>
+              <th>Média</th>
+              <th>Faltas</th>
+              <th>Situação</th>
+            </tr>
+          </thead>
+          <tbody id="corpo-tabela">
+            <!-- As linhas serão inseridas pelo JavaScript -->
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- PAINEL DE EDIÇÃO -->
+    <section id="painel-edicao" class="painel-edicao escondido">
+      <h2>Editar Notas e Faltas</h2>
+      <form id="form-edicao">
+        <div id="container-campos-edicao"></div>
+        <div class="botoes-edicao">
+          <button type="button" id="btn-salvar" class="btn-primario">Salvar alterações</button>
+          <button type="button" id="btn-cancelar" class="btn-secundario">Cancelar</button>
+        </div>
+        <p id="msg-edicao" class="msg-status"></p>
+      </form>
+    </section>
+
+  </main>
 
   <script src="script.js"></script>
 </body>
