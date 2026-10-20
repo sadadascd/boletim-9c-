@@ -1,6 +1,3 @@
-PASSO 3 — Copie o código abaixo usando o botão Copiar do bloco de código.
-
-```javascript
 /* =========================================================
    BOLETIM DIGITAL - script.js
    Dados do 9º Ano (Turma 9C, Chamada 10)
@@ -428,6 +425,4 @@ document.getElementById("btn-salvar").addEventListener("click", function () {
     .catch(function (err) {
       msgEdicao.textContent = err.message || "Não foi possível salvar as alterações. Mantenha os dados e tente novamente.";
     });
-});
-
-```
+});er
