@@ -4,8 +4,11 @@
    ========================================================= */
 
 /* ---------------------------------------------------------
-   CONFIGURAÇÃO FIXA DO ALUNO
+   1) DECLARAÇÃO DE VARIÁVEIS GLOBAIS (SEMPRE NO TOPO)
    --------------------------------------------------------- */
+var pinSessao = null;
+var listaDisciplinasAtual = [];
+
 const CONFIG_ALUNO = {
   turma: "9C",
   numeroChamada: 10,
@@ -16,13 +19,7 @@ const MEDIA_MINIMA = 6.0;
 const FREQUENCIA_DEMONSTRATIVA = 92;
 
 /* ---------------------------------------------------------
-   SESSÃO EM MEMÓRIA DO PIN E DADOS
-   --------------------------------------------------------- */
-let pinSessao = null;
-let listaDisciplinasAtual = [];
-
-/* ---------------------------------------------------------
-   1) DADOS BRUTOS LOCAIS (FALLBACK)
+   2) DADOS BRUTOS LOCAIS (FALLBACK)
    --------------------------------------------------------- */
 const dadosBrutos = [
   { disciplina: "Língua Portuguesa", tri1: 78, tri2: "8,2", tri3: 8.6, faltas: [2, 2, 1] },
@@ -43,7 +40,7 @@ const dadosBrutos = [
 ];
 
 /* ---------------------------------------------------------
-   FUNÇÕES DE NORMALIZAÇÃO E TRATAMENTO
+   3) FUNÇÕES AUXILIARES E DE TRATAMENTO
    --------------------------------------------------------- */
 function normalizarNota(valor) {
   if (valor === null || valor === undefined || valor === "") {
@@ -114,7 +111,7 @@ function criarClasseSituacao(situacao) {
 }
 
 /* ---------------------------------------------------------
-   RENDERIZAÇÃO DA TELA
+   4) RENDERIZAÇÃO DA TELA
    --------------------------------------------------------- */
 function renderizarTela(disciplinas) {
   listaDisciplinasAtual = disciplinas;
@@ -227,7 +224,28 @@ function renderizarTela(disciplinas) {
 }
 
 /* ---------------------------------------------------------
-   ABRIR E MONTAR O PAINEL DE EDIÇÃO
+   5) VALIDAÇÕES DOS CAMPOS DE EDIÇÃO
+   --------------------------------------------------------- */
+function validarNotaInput(val) {
+  if (val === "" || val === null || val === undefined) return { ok: true, valor: null };
+  const str = String(val).trim().replace(",", ".");
+  if (str === "") return { ok: true, valor: null };
+  const num = Number(str);
+  if (isNaN(num) || num < 0 || num > 10) return { ok: false };
+  return { ok: true, valor: num };
+}
+
+function validarFaltaInput(val) {
+  if (val === "" || val === null || val === undefined) return { ok: false };
+  const str = String(val).trim();
+  if (!/^\d+$/.test(str)) return { ok: false };
+  const num = parseInt(str, 10);
+  if (isNaN(num) || num < 0) return { ok: false };
+  return { ok: true, valor: num };
+}
+
+/* ---------------------------------------------------------
+   6) PAINEL DE EDIÇÃO
    --------------------------------------------------------- */
 function abrirPainelEdicao() {
   const painel = document.getElementById("painel-edicao");
@@ -276,30 +294,9 @@ function abrirPainelEdicao() {
 }
 
 /* ---------------------------------------------------------
-   VALIDAÇÕES DOS CAMPOS DE EDIÇÃO
+   7) INICIALIZAÇÃO E EVENTOS DE CLIQUE
    --------------------------------------------------------- */
-function validarNotaInput(val) {
-  if (val === "" || val === null || val === undefined) return { ok: true, valor: null };
-  const str = String(val).trim().replace(",", ".");
-  if (str === "") return { ok: true, valor: null };
-  const num = Number(str);
-  if (isNaN(num) || num < 0 || num > 10) return { ok: false };
-  return { ok: true, valor: num };
-}
-
-function validarFaltaInput(val) {
-  if (val === "" || val === null || val === undefined) return { ok: false };
-  const str = String(val).trim();
-  if (!/^\d+$/.test(str)) return { ok: false };
-  const num = parseInt(str, 10);
-  if (isNaN(num) || num < 0) return { ok: false };
-  return { ok: true, valor: num };
-}
-
-/* ---------------------------------------------------------
-   INICIALIZAÇÃO E EVENTOS
-   --------------------------------------------------------- */
-function inicializarEventos() {
+function registrarEventos() {
   const btnEntrar = document.getElementById("btn-entrar");
   if (btnEntrar) {
     btnEntrar.onclick = function () {
@@ -458,8 +455,9 @@ function inicializarEventos() {
   }
 }
 
-if (document.readyState === "loading") {
-  document.addEventListener("DOMContentLoaded", inicializarEventos);
+// Executa o registro dos eventos somente quando o DOM estiver pronto
+if (document.readyState === "complete" || document.readyState === "interactive") {
+  registrarEventos();
 } else {
-  inicializarEventos();
+  document.addEventListener("DOMContentLoaded", registrarEventos);
 }
