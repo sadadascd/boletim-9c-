@@ -120,6 +120,7 @@ function renderizarTela(disciplinas) {
   listaDisciplinasAtual = disciplinas;
 
   const corpoTabela = document.getElementById("corpo-tabela");
+  if (!corpoTabela) return;
   corpoTabela.innerHTML = "";
 
   const disciplinasTratadas = disciplinas.map(function (d) {
@@ -194,141 +195,40 @@ function renderizarTela(disciplinas) {
     mediaGeral = soma / mediasDisponiveis.length;
   }
 
-  document.getElementById("media-geral").textContent = formatarNota(mediaGeral);
+  const elMediaGeral = document.getElementById("media-geral");
+  if (elMediaGeral) elMediaGeral.textContent = formatarNota(mediaGeral);
 
   let totalFaltasGeral = 0;
   disciplinasTratadas.forEach(function (d) {
     totalFaltasGeral += d.faltas;
   });
-  document.getElementById("total-faltas").textContent = totalFaltasGeral;
+  const elTotalFaltas = document.getElementById("total-faltas");
+  if (elTotalFaltas) elTotalFaltas.textContent = totalFaltasGeral;
 
   let qtdBom = 0;
   disciplinasTratadas.forEach(function (d) {
     if (d.situacao === "Bom desempenho") qtdBom++;
   });
-  document.getElementById("qtd-bom").textContent = qtdBom;
+  const elQtdBom = document.getElementById("qtd-bom");
+  if (elQtdBom) elQtdBom.textContent = qtdBom;
 
   let qtdAtencao = 0;
   disciplinasTratadas.forEach(function (d) {
     if (d.situacao === "Atenção") qtdAtencao++;
   });
-  document.getElementById("qtd-atencao").textContent = qtdAtencao;
+  const elQtdAtencao = document.getElementById("qtd-atencao");
+  if (elQtdAtencao) elQtdAtencao.textContent = qtdAtencao;
 
-  document.getElementById("frequencia").textContent = FREQUENCIA_DEMONSTRATIVA + "%";
-  document.getElementById("frequencia-legenda").textContent = "Frequência adequada";
+  const elFreq = document.getElementById("frequencia");
+  if (elFreq) elFreq.textContent = FREQUENCIA_DEMONSTRATIVA + "%";
+
+  const elFreqLeg = document.getElementById("frequencia-legenda");
+  if (elFreqLeg) elFreqLeg.textContent = "Frequência adequada";
 }
 
 /* ---------------------------------------------------------
-   CONEXÃO API: ABRIR BOLETIM
+   VALIDAÇÕES DOS CAMPOS DE EDIÇÃO
    --------------------------------------------------------- */
-document.getElementById("btn-entrar").addEventListener("click", function () {
-  const campoPin = document.getElementById("input-pin");
-  const pinDigitado = campoPin.value.trim();
-  const msgLogin = document.getElementById("msg-login");
-
-  if (!pinDigitado) {
-    msgLogin.textContent = "Por favor, digite o PIN.";
-    return;
-  }
-
-  msgLogin.textContent = "Conectando...";
-
-  fetch(CONFIG_ALUNO.apiUrl + "/api/v1/boletins/abrir", {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({
-      turma: CONFIG_ALUNO.turma,
-      numero_chamada: CONFIG_ALUNO.numeroChamada,
-      pin: pinDigitado
-    })
-  })
-    .then(function (res) {
-      if (res.status === 401) {
-        throw new Error("Turma, chamada ou PIN inválidos.");
-      }
-      if (res.status === 429) {
-        throw new Error("Muitas tentativas. Aguarde um minuto e tente novamente.");
-      }
-      if (!res.ok) {
-        throw new Error("Não foi possível conectar ao servidor. Tente novamente.");
-      }
-      return res.json();
-    })
-    .then(function (data) {
-      pinSessao = pinDigitado;
-      campoPin.value = "";
-      msgLogin.textContent = "";
-
-      document.getElementById("area-login").classList.add("escondido");
-      document.getElementById("conteudo-boletim").classList.remove("escondido");
-
-      let disciplinasParaUsar = [];
-
-      if (data && data.dados && Array.isArray(data.dados.disciplinas) && data.dados.disciplinas.length > 0) {
-        disciplinasParaUsar = data.dados.disciplinas;
-      } else {
-        disciplinasParaUsar = dadosBrutos;
-      }
-
-      renderizarTela(disciplinasParaUsar);
-    })
-    .catch(function (err) {
-      msgLogin.textContent = err.message || "Não foi possível conectar ao servidor. Tente novamente.";
-    });
-});
-
-/* ---------------------------------------------------------
-   EDIÇÃO DE DADOS
-   --------------------------------------------------------- */
-document.getElementById("btn-alterar").addEventListener("click", function () {
-  const painel = document.getElementById("painel-edicao");
-  const container = document.getElementById("container-campos-edicao");
-  container.innerHTML = "";
-
-  listaDisciplinasAtual.forEach(function (d, idx) {
-    const block = document.createElement("div");
-    block.className = "grid-edicao-disciplina";
-
-    const h3 = document.createElement("h3");
-    h3.textContent = d.disciplina;
-    block.appendChild(h3);
-
-    const grid = document.createElement("div");
-    grid.className = "campos-grid";
-
-    let f1 = "", f2 = "", f3 = "";
-    if (Array.isArray(d.faltas)) {
-      f1 = d.faltas[0] !== undefined && d.faltas[0] !== null ? d.faltas[0] : "";
-      f2 = d.faltas[1] !== undefined && d.faltas[1] !== null ? d.faltas[1] : "";
-      f3 = d.faltas[2] !== undefined && d.faltas[2] !== null ? d.faltas[2] : "";
-    } else if (typeof d.faltas === "number") {
-      f1 = d.faltas;
-    }
-
-    const val1 = d.tri1 !== null && d.tri1 !== undefined ? String(d.tri1).replace(".", ",") : "";
-    const val2 = d.tri2 !== null && d.tri2 !== undefined ? String(d.tri2).replace(".", ",") : "";
-    const val3 = d.tri3 !== null && d.tri3 !== undefined ? String(d.tri3).replace(".", ",") : "";
-
-    grid.innerHTML =
-      '<div class="item-campo"><label>1º Tri Nota</label><input type="text" class="inp-nota" data-idx="' + idx + '" data-campo="tri1" value="' + val1 + '" placeholder="ex: 7,5"></div>' +
-      '<div class="item-campo"><label>2º Tri Nota</label><input type="text" class="inp-nota" data-idx="' + idx + '" data-campo="tri2" value="' + val2 + '" placeholder="ex: 8,0"></div>' +
-      '<div class="item-campo"><label>3º Tri Nota</label><input type="text" class="inp-nota" data-idx="' + idx + '" data-campo="tri3" value="' + val3 + '" placeholder="ex: 9,2"></div>' +
-      '<div class="item-campo"><label>1º Tri Faltas</label><input type="text" class="inp-falta" data-idx="' + idx + '" data-campo="f1" value="' + f1 + '"></div>' +
-      '<div class="item-campo"><label>2º Tri Faltas</label><input type="text" class="inp-falta" data-idx="' + idx + '" data-campo="f2" value="' + f2 + '"></div>' +
-      '<div class="item-campo"><label>3º Tri Faltas</label><input type="text" class="inp-falta" data-idx="' + idx + '" data-campo="f3" value="' + f3 + '"></div>';
-
-    block.appendChild(grid);
-    container.appendChild(block);
-  });
-
-  painel.classList.remove("escondido");
-});
-
-document.getElementById("btn-cancelar").addEventListener("click", function () {
-  document.getElementById("painel-edicao").classList.add("escondido");
-  document.getElementById("msg-edicao").textContent = "";
-});
-
 function validarNotaInput(val) {
   if (val === "" || val === null || val === undefined) return { ok: true, valor: null };
   const str = String(val).trim().replace(",", ".");
@@ -348,81 +248,213 @@ function validarFaltaInput(val) {
 }
 
 /* ---------------------------------------------------------
-   SALVAR ALTERAÇÕES NA API
+   INICIALIZAÇÃO DOS EVENTOS (DOM LOADED)
    --------------------------------------------------------- */
-document.getElementById("btn-salvar").addEventListener("click", function () {
-  const msgEdicao = document.getElementById("msg-edicao");
-  msgEdicao.textContent = "";
+document.addEventListener("DOMContentLoaded", function () {
 
-  const inputs = document.querySelectorAll("#container-campos-edicao input");
-  inputs.forEach(function (inp) { inp.classList.remove("campo-invalido"); });
+  // Evento do botão ENTRAR
+  const btnEntrar = document.getElementById("btn-entrar");
+  if (btnEntrar) {
+    btnEntrar.addEventListener("click", function () {
+      const campoPin = document.getElementById("input-pin");
+      const pinDigitado = campoPin ? campoPin.value.trim() : "";
+      const msgLogin = document.getElementById("msg-login");
 
-  let possuiErro = false;
-  const copiaDisciplinas = JSON.parse(JSON.stringify(listaDisciplinasAtual));
-
-  inputs.forEach(function (inp) {
-    const idx = parseInt(inp.getAttribute("data-idx"), 10);
-    const campo = inp.getAttribute("data-campo");
-    const valRaw = inp.value;
-
-    if (inp.classList.contains("inp-nota")) {
-      const res = validarNotaInput(valRaw);
-      if (!res.ok) {
-        inp.classList.add("campo-invalido");
-        possuiErro = true;
-      } else {
-        copiaDisciplinas[idx][campo] = res.valor;
+      if (!pinDigitado) {
+        if (msgLogin) msgLogin.textContent = "Por favor, digite o PIN.";
+        return;
       }
-    } else if (inp.classList.contains("inp-falta")) {
-      const res = validarFaltaInput(valRaw);
-      if (!res.ok) {
-        inp.classList.add("campo-invalido");
-        possuiErro = true;
-      } else {
-        if (!Array.isArray(copiaDisciplinas[idx].faltas)) {
-          copiaDisciplinas[idx].faltas = [0, 0, 0];
-        }
-        if (campo === "f1") copiaDisciplinas[idx].faltas[0] = res.valor;
-        if (campo === "f2") copiaDisciplinas[idx].faltas[1] = res.valor;
-        if (campo === "f3") copiaDisciplinas[idx].faltas[2] = res.valor;
-      }
-    }
-  });
 
-  if (possuiErro) {
-    msgEdicao.textContent = "Existem campos com valores inválidos. Verifique os destaques em vermelho.";
-    return;
+      if (msgLogin) msgLogin.textContent = "Conectando...";
+
+      fetch(CONFIG_ALUNO.apiUrl + "/api/v1/boletins/abrir", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          turma: CONFIG_ALUNO.turma,
+          numero_chamada: CONFIG_ALUNO.numeroChamada,
+          pin: pinDigitado
+        })
+      })
+        .then(function (res) {
+          if (res.status === 401) {
+            throw new Error("Turma, chamada ou PIN inválidos.");
+          }
+          if (res.status === 429) {
+            throw new Error("Muitas tentativas. Aguarde um minuto e tente novamente.");
+          }
+          if (!res.ok) {
+            throw new Error("Não foi possível conectar ao servidor. Tente novamente.");
+          }
+          return res.json();
+        })
+        .then(function (data) {
+          pinSessao = pinDigitado;
+          if (campoPin) campoPin.value = "";
+          if (msgLogin) msgLogin.textContent = "";
+
+          const areaLogin = document.getElementById("area-login");
+          if (areaLogin) areaLogin.classList.add("escondido");
+
+          const conteudoBoletim = document.getElementById("conteudo-boletim");
+          if (conteudoBoletim) conteudoBoletim.classList.remove("escondido");
+
+          let disciplinasParaUsar = [];
+          if (data && data.dados && Array.isArray(data.dados.disciplinas) && data.dados.disciplinas.length > 0) {
+            disciplinasParaUsar = data.dados.disciplinas;
+          } else {
+            disciplinasParaUsar = dadosBrutos;
+          }
+
+          renderizarTela(disciplinasParaUsar);
+        })
+        .catch(function (err) {
+          if (msgLogin) msgLogin.textContent = err.message || "Não foi possível conectar ao servidor. Tente novamente.";
+        });
+    });
   }
 
-  msgEdicao.textContent = "Salvando...";
+  // Evento do botão ALTERAR DADOS
+  const btnAlterar = document.getElementById("btn-alterar");
+  if (btnAlterar) {
+    btnAlterar.addEventListener("click", function () {
+      const painel = document.getElementById("painel-edicao");
+      const container = document.getElementById("container-campos-edicao");
+      if (!painel || !container) return;
 
-  fetch(CONFIG_ALUNO.apiUrl + "/api/v1/boletins/salvar", {
-    method: "PUT",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({
-      turma: CONFIG_ALUNO.turma,
-      numero_chamada: CONFIG_ALUNO.numeroChamada,
-      pin: pinSessao,
-      dados: {
-        disciplinas: copiaDisciplinas
-      }
-    })
-  })
-    .then(function (res) {
-      if (!res.ok) {
-        throw new Error("Erro ao salvar os dados no servidor.");
-      }
-      return res.json();
-    })
-    .then(function () {
-      msgEdicao.textContent = "Dados salvos com sucesso.";
-      renderizarTela(copiaDisciplinas);
-      setTimeout(function () {
-        document.getElementById("painel-edicao").classList.add("escondido");
-        msgEdicao.textContent = "";
-      }, 1500);
-    })
-    .catch(function (err) {
-      msgEdicao.textContent = err.message || "Não foi possível salvar as alterações. Mantenha os dados e tente novamente.";
+      container.innerHTML = "";
+
+      listaDisciplinasAtual.forEach(function (d, idx) {
+        const block = document.createElement("div");
+        block.className = "grid-edicao-disciplina";
+
+        const h3 = document.createElement("h3");
+        h3.textContent = d.disciplina;
+        block.appendChild(h3);
+
+        const grid = document.createElement("div");
+        grid.className = "campos-grid";
+
+        let f1 = "", f2 = "", f3 = "";
+        if (Array.isArray(d.faltas)) {
+          f1 = d.faltas[0] !== undefined && d.faltas[0] !== null ? d.faltas[0] : "";
+          f2 = d.faltas[1] !== undefined && d.faltas[1] !== null ? d.faltas[1] : "";
+          f3 = d.faltas[2] !== undefined && d.faltas[2] !== null ? d.faltas[2] : "";
+        } else if (typeof d.faltas === "number") {
+          f1 = d.faltas;
+        }
+
+        const val1 = d.tri1 !== null && d.tri1 !== undefined ? String(d.tri1).replace(".", ",") : "";
+        const val2 = d.tri2 !== null && d.tri2 !== undefined ? String(d.tri2).replace(".", ",") : "";
+        const val3 = d.tri3 !== null && d.tri3 !== undefined ? String(d.tri3).replace(".", ",") : "";
+
+        grid.innerHTML =
+          '<div class="item-campo"><label>1º Tri Nota</label><input type="text" class="inp-nota" data-idx="' + idx + '" data-campo="tri1" value="' + val1 + '" placeholder="ex: 7,5"></div>' +
+          '<div class="item-campo"><label>2º Tri Nota</label><input type="text" class="inp-nota" data-idx="' + idx + '" data-campo="tri2" value="' + val2 + '" placeholder="ex: 8,0"></div>' +
+          '<div class="item-campo"><label>3º Tri Nota</label><input type="text" class="inp-nota" data-idx="' + idx + '" data-campo="tri3" value="' + val3 + '" placeholder="ex: 9,2"></div>' +
+          '<div class="item-campo"><label>1º Tri Faltas</label><input type="text" class="inp-falta" data-idx="' + idx + '" data-campo="f1" value="' + f1 + '"></div>' +
+          '<div class="item-campo"><label>2º Tri Faltas</label><input type="text" class="inp-falta" data-idx="' + idx + '" data-campo="f2" value="' + f2 + '"></div>' +
+          '<div class="item-campo"><label>3º Tri Faltas</label><input type="text" class="inp-falta" data-idx="' + idx + '" data-campo="f3" value="' + f3 + '"></div>';
+
+        block.appendChild(grid);
+        container.appendChild(block);
+      });
+
+      painel.classList.remove("escondido");
     });
-});er
+  }
+
+  // Evento do botão CANCELAR
+  const btnCancelar = document.getElementById("btn-cancelar");
+  if (btnCancelar) {
+    btnCancelar.addEventListener("click", function () {
+      const painel = document.getElementById("painel-edicao");
+      if (painel) painel.classList.add("escondido");
+      const msgEdicao = document.getElementById("msg-edicao");
+      if (msgEdicao) msgEdicao.textContent = "";
+    });
+  }
+
+  // Evento do botão SALVAR ALTERAÇÕES
+  const btnSalvar = document.getElementById("btn-salvar");
+  if (btnSalvar) {
+    btnSalvar.addEventListener("click", function () {
+      const msgEdicao = document.getElementById("msg-edicao");
+      if (msgEdicao) msgEdicao.textContent = "";
+
+      const inputs = document.querySelectorAll("#container-campos-edicao input");
+      inputs.forEach(function (inp) { inp.classList.remove("campo-invalido"); });
+
+      let possuiErro = false;
+      const copiaDisciplinas = JSON.parse(JSON.stringify(listaDisciplinasAtual));
+
+      inputs.forEach(function (inp) {
+        const idx = parseInt(inp.getAttribute("data-idx"), 10);
+        const campo = inp.getAttribute("data-campo");
+        const valRaw = inp.value;
+
+        if (inp.classList.contains("inp-nota")) {
+          const res = validarNotaInput(valRaw);
+          if (!res.ok) {
+            inp.classList.add("campo-invalido");
+            possuiErro = true;
+          } else {
+            copiaDisciplinas[idx][campo] = res.valor;
+          }
+        } else if (inp.classList.contains("inp-falta")) {
+          const res = validarFaltaInput(valRaw);
+          if (!res.ok) {
+            inp.classList.add("campo-invalido");
+            possuiErro = true;
+          } else {
+            if (!Array.isArray(copiaDisciplinas[idx].faltas)) {
+              copiaDisciplinas[idx].faltas = [0, 0, 0];
+            }
+            if (campo === "f1") copiaDisciplinas[idx].faltas[0] = res.valor;
+            if (campo === "f2") copiaDisciplinas[idx].faltas[1] = res.valor;
+            if (campo === "f3") copiaDisciplinas[idx].faltas[2] = res.valor;
+          }
+        }
+      });
+
+      if (possuiErro) {
+        if (msgEdicao) msgEdicao.textContent = "Existem campos com valores inválidos. Verifique os destaques em vermelho.";
+        return;
+      }
+
+      if (msgEdicao) msgEdicao.textContent = "Salvando...";
+
+      fetch(CONFIG_ALUNO.apiUrl + "/api/v1/boletins/salvar", {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          turma: CONFIG_ALUNO.turma,
+          numero_chamada: CONFIG_ALUNO.numeroChamada,
+          pin: pinSessao,
+          dados: {
+            disciplinas: copiaDisciplinas
+          }
+        })
+      })
+        .then(function (res) {
+          if (!res.ok) {
+            throw new Error("Erro ao salvar os dados no servidor.");
+          }
+          return res.json();
+        })
+        .then(function () {
+          if (msgEdicao) msgEdicao.textContent = "Dados salvos com sucesso.";
+          renderizarTela(copiaDisciplinas);
+          setTimeout(function () {
+            const painel = document.getElementById("painel-edicao");
+            if (painel) painel.classList.add("escondido");
+            if (msgEdicao) msgEdicao.textContent = "";
+          }, 1500);
+        })
+        .catch(function (err) {
+          if (msgEdicao) msgEdicao.textContent = err.message || "Não foi possível salvar as alterações. Mantenha os dados e tente novamente.";
+        });
+    });
+  }
+
+});
